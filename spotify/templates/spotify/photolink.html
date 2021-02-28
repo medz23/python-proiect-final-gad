@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block content %}
+
+
+<br><br><br><br><br><br>
+
+<div class="container">
+  <h1>Hello this is spotify testing</h1>
+  <a href="{% url 'spotify:connect' %}" class="btn btn-primary">Connect with spotify</a>
+
+</div>
+
+
+{% endblock %}

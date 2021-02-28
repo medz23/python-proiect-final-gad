@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block content %}
+
+
+<br><br><br><br><br><br>
+
+<div class="container">
+  <h1>You are connected to spotify!</h1>
+  <h2>Nice, now go to pick your song!</h2>
+  <a href="{% url 'spotify:search_song' %}" class="btn btn-primary">Search</a>
+
+
+
+
+
+{% endblock %}

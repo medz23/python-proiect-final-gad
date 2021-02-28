@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}
+  <title>Search</title>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <br><br>
+  <div class="search-form-div">
+    <form method="POST" class="search-form">
+      {% csrf_token %}
+      <input type="text" name="search" class="search-input" style="color:#222;" placeholder="search username">
+      <input type="submit" name="" value="Search" class="btn-search btn-primary">
+    </form>
+  </div>
+
+  {% if message %}
+  <div class="resent-posts">
+  <h1 class="resent-posts-heading">{{message}}</h1>
+  </div>
+  {% endif %}
+  {% if users %}
+  <div class="resent-posts">
+      <h1 class="resent-posts-heading">User result:</h1>
+  </div>
+  <div class="content-section-blue">
+
+    {% for pro in users %}
+      <div class="d-flex flex-row justify-content-between align-items-center">
+          <div class="d-flex flex-row align-items-center">
+            <a class="link-style-none" href="{% url 'accounts:profile' pro.username %}">
+              <img class="rounded-circle article-img-search" src="{{pro.profile.image_thumbnail_user.url}}" width="55">
+            </a>
+            <div class="d-flex flex-column align-items-start ml-2">
+              <span>{{ pro.profile.name }}</span>
+              <a class="link-style-none" href="{% url 'accounts:profile' pro.username %}"><span class="font-weight-bold">{{pro.username}}</span></a>
+            </div>
+          </div>
+          <div class="d-flex flex-row align-items-center mt-2">
+            {% if pro in user.profile.follows.all %}
+              <p>following</p>
+            {% endif %}
+          </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% endif %}
+
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+          var infinite = new Waypoint.Infinite({
+            element: $('.infinite-container')[0],
+            onBeforePageLoad: function () {
+              $('.loading').show();
+            },
+            onAfterPageLoad: function ($items) {
+              $('.loading').hide();
+            }
+          });
+      </script>
+{% endblock %}

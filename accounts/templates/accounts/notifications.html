@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}<title> @{{request.user.username}}'s notifications</title>{% endblock %}
+
+{% block content %}
+      <div class="content-section overflow-auto infinite-container">
+          <br>
+        <h1 style="text-align:center;">Notifications</h1>
+        {% for notification in notifications %}
+          {% if notification.read %}
+          <p class="notification-list-items-read infinite-item">
+          {%else%}
+          <p class="notification-list-items-unread infinite-item">
+          {% endif %}
+
+            <a href="{% url 'profile' notification.sender.username %}" style="text-decoration: blink;">{{notification.sender.username}}</a> {{notification.action}}
+            {% if notification.post %}
+             <span class="post-title-notify"><a href="{% url 'accounts:post-detail' notification.post.slug %}">"{{notification.post.title}}".</a></span>
+            {% endif %}
+             <br><small>({{notification.timestamp|date:"D, d M, g:i a"}})</small>
+          </p>
+        {% empty %}
+        <p class="notification-list-items-unread" style="text-align:center;">No notifications yet!</p>
+        {% endfor %}
+      </div>
+
+      <div class="loading" style="display: none;">
+        Loading...
+      </div>
+      {% if notifications.has_next %}
+        <a class="infinite-more-link" style="display: none;" href="?page={{ notifications.next_page_number }}">More</a>
+      {% endif %}
+
+{% endblock content %}
+{% block script %}
+        <script>
+        $( document ).ready(function(){
+            $.ajax({
+                url: "{% url 'accounts:notifications-update' request.user.username %}",
+                type: 'get',
+                success: function(data){
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                  }
+            });
+        });
+        </script>
+        <script>
+          var infinite = new Waypoint.Infinite({
+            element: $('.infinite-container')[0],
+            onBeforePageLoad: function () {
+              $('.loading').show();
+            },
+            onAfterPageLoad: function ($items) {
+              $('.loading').hide();
+            }
+          });
+      </script>
+
+{% endblock %}

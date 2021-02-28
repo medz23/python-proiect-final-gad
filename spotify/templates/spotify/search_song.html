@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block content %}
+
+
+<br><br><br><br><br><br>
+
+<div class="container">
+  <h1>Pick your tracks :)</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group row">
+      <label for="colform" class="col-sm-2 col-form-label col-form-label-lg">Search for a song</label>
+      <div class="col-sm-10">
+        <input type="" name="uri" placeholder="type uri" class="form-control form-control-lg" id="colform">
+        <br>
+        <button type="submit" class="btn btn-success btn-lg mt-1" name="button">Submit</button>
+
+      </div>
+
+    </div>
+  </form>
+</div>
+
+
+
+{% if results %}
+  <div class="container bg-dark p-2">
+    {% for x in results %}
+      <ol class="list-group mt-1">
+        <li class="list-group-item bg-info text-center"><h3 class="text-white" >{{x.name}}</h3></li>
+        <li class="list-group-item" ><a href='{{x.preview_url}}'><button type="button" class="btn btn-success btn-lg mt-1">PLAY SONG</button></a></li>
+        <li class="list-group-item"><img src="{{x.album.images.0.url}}" style="width=10px; height=10px;" class="" alt=""></li>
+      </ol><hr>
+    {% endfor %}
+  </div>
+
+{% endif %}
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block meta %}
+  <meta name="description" content={{post.title}}>
+{% endblock %}
+
+
+{% block title %}<title> {{post.title}} - Asame</title>{% endblock %}
+
+{% block content %}
+<div class="container">
+  <article class="content-section-details">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2"
+           href="{% url 'accounts:profile' post.author.username %}"><span class="link-style-none">Post by: </span> {{ post.author }}
+        </a>
+        <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+
+      </div>
+      {% if post.author == user %}
+          <div>
+            <a class="btn btn-outline-secondary btn-success mt-1 mb-1"
+               href="{% url 'accounts:post-update' post.id %}">Update
+            </a>
+            <a class="btn btn-outline-danger btn-danger mt-1 mb-1"
+               href="{% url 'accounts:post-delete' post.id %}">Delete
+            </a>
+          </div>
+
+      {% endif %}
+    </div>
+
+  </article>
+  <article class="media">
+    <div class="media-body">
+      <h1 class="article-title">{{ post.title }}</h1>
+      <hr>
+      <img class="post-image-detail" src="{{post.image.url}}">
+      <br>
+      <p class="article-content">{{ post.content }}</p>
+    </div>
+  </article>
+  <div class="post-applause-details read-more">
+              <p id="like-count">{{post.likes.count}}</p>
+              <p id="like-count-2" style="display: none;"></p>
+              <a href="" name="{{post.id}}" id="like{{post.id}}" class="like">
+              <span class="glyphicon glyphicon-heart"> </span> Likes
+              </a>
+
+
+  </div>
+  {% if user.is_authenticated %}
+  <div class="article-form">
+    <form method="POST" class="">{% csrf_token %}
+      {{form | crispy}}
+      <button type="submit" class="btn btn-primary" style="float: right;">Post</button>
+    </form>
+  </div>
+  {% endif %}
+  <br>
+  <div class="comments">
+  <p>{{comments.count}} Comments</p>
+  {% for comment in comments %}
+  <div class="comments-inside">
+    <a class="link-style-none" href="{% url 'profile' comment.author.username %}">
+      <img class="rounded-circle article-img-comment" src="{{comment.author.profile.image_thumbnail_user.url}}" width="55">
+    </a>
+    <article class="media content-section-blue">
+      <div class="media-body">
+        <small>{{ comment.author }} - {{comment.date_posted}}</small>
+        <p class="article-content">{{ comment.comment}}</p>
+      </div>
+    </article>
+  </div>
+
+  {% endfor %}
+  </div>
+
+
+</div>
+
+
+{% endblock content %}
+
+{% block script %}
+{% if user in post.likes.all %}
+<script>
+    $(document).ready(function () {
+      $('#unliked').hide()
+    });
+</script>
+{% else %}
+<script type="text/javascript">
+    $(document).ready(function () {
+      $('#liked').hide()
+    });
+</script>
+{% endif %}
+
+<script>
+$(document).ready(function () {
+$('.like').click(function(event){
+      event.preventDefault();
+      $.ajax({
+               type: "POST",
+               url: "{% url 'accounts:like' %}",
+               data: {'pk': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+               dataType: "json",
+               success: function(response) {
+                      if (response.like) {
+                        $('#liked').show();
+                        $('#unliked').hide();
+                        $('#like-count').text(response.likes_count);
+
+                      } else {
+                        $('#liked').hide();
+                        $('#unliked').show();
+                        $('#like-count').text(response.likes_count);
+                      }
+                },
+
+                error: function(rs, e) {
+                       alert('Poor network try again or refresh the page.');
+
+
+                }
+          });
+    });
+});
+</script>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".article-content").each(function(data){
+      var UserReg = /(^|\s)@([\w\d-]+)/g
+      var NewText = $(this).html().match(UserReg, "$1<a href='/$2/'>@$2</a>")
+      var NewText = $(this).html().replace(UserReg, "$1<a href='/$2/'>@$2</a>")
+      $(this).html(NewText)
+    })
+  })
+</script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".article-content").each(function(data){
+      var LinkReg = /(https?:\/\/[^\s]+)/g;
+      var LinkText = $(this).html().match(LinkReg)
+      var LinkText = $(this).html().replace(LinkReg, "<a href="+LinkText+">"+LinkText+"</a>")
+      $(this).html(LinkText)
+    })
+  })
+</script>
+{% endblock %}

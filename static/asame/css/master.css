@@ -1,0 +1,15 @@
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  background: #191063;
+  margin:0;
+  padding-bottom:58px;
+}
+
+.mynav{
+  font-family: 'Euphoria Script', cursive !important;
+}
+
+
